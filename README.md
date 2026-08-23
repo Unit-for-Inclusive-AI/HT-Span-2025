@@ -62,48 +62,39 @@ Our study makes **three main contributions**:
 | 3️⃣ | **Comprehensive benchmarking** of monolingual vs. multilingual models for detecting subtle forms of hate speech across low-resource languages |
 
 ---
-<!--
 ## 📂 Repository Structure
 
-```
-HomoTrans-Span-Ph.D./
+```text
+HT-Span-2025/
 │
-├── 📁 HT_Span_GOLD dataset/          # Gold-standard annotated datasets
-│   ├── HT_Span_English_GOLD.csv      # 222 sentences, 444 annotated spans
-│   ├── HT_Span_Marathi_GOLD.csv      # 557 sentences, 643 annotated spans
-│   └── HT_Span_Tamil_GOLD.csv        # 372 sentences, 402 annotated spans
+├── HT_Span_GOLD dataset/                # Gold-standard annotated datasets
+│   ├── HT_Span_English_GOLD.csv         # English gold dataset
+│   ├── HT_Span_Marathi_GOLD.csv         # Marathi gold dataset
+│   └── HT_Span_Tamil_GOLD.csv           # Tamil gold dataset
 │
-├── 📁 span-main/                     # Main codebase
-│   ├── 📁 data/                      # Data loading & preprocessing scripts
-│   │   ├── preprocess.py             # Text cleaning & tokenization
-│   │   ├── dataset.py                # PyTorch Dataset class
-│   │   └── split.py                  # Train/val/test splitting
+├── span-main/                            # Main codebase
 │   │
-│   └── 📁 src/                       # Model training & evaluation
-│       ├── 📁 models/                # Model architecture definitions
-│       │   ├── bert_span.py          # Base BERT + span detection head
-│       │   ├── bert_crf.py           # BERT + CRF layer
-│       │   └── bert_bilstm_crf.py    # BERT + BiLSTM + CRF
-│       ├── train.py                  # Training loop with early stopping
-│       ├── evaluate.py               # Evaluation & metrics (F1, P, R)
-│       ├── predict.py                # Inference on new text
-│       └── utils.py                  # Helpers, logging, config
+│   ├── data/                             # Data preparation and preprocessing
+│   │   ├── add_spans.py
+│   │   ├── data_prep.py
+│   │   ├── english_span_updated.csv
+│   │   ├── final_tamil.csv
+│   │   └── marathi_combined_updated_data.csv
+│   │
+│   └── src/                              # Model training and evaluation
+│       │
+│       ├── models/                       # BERT-based model architectures
+│       │   ├── bert_backbone.py
+│       │   ├── bert_bilstm_crf.py
+│       │   └── bert_crf.py
+│       │
+│       ├── span_dataset.py               # Dataset handling
+│       ├── train_and_evaluate.py         # Training and evaluation pipeline
+│       └── utils.py                      # Utility functions
 │
-├── 📁 figures/                       # Paper figures for reference
-│   ├── dataset_pipeline.png          # Fig. 1 — Dataset creation pipeline
-│   ├── label_distribution.png        # Fig. 2 — Label distribution
-│   ├── doccano_interface.png         # Fig. 3 — Doccano annotation UI
-│   ├── annotation_examples.png       # Fig. 4 — Annotated hate speech examples
-│   ├── annotator_demographics.png    # Fig. 5 — Annotator profile
-│   ├── doccano_problem.png           # Fig. 6 — Annotation export issue
-│   ├── model_architecture.png        # Fig. 7 — HTSpan-BERT architecture
-│   └── error_analysis.png            # Fig. 8 — Error analysis table
-│
-├── requirements.txt                  # Python dependencies
 ├── .gitignore
 └── README.md
 ```
--->
 
 ## 🗂️ Dataset
 
@@ -113,36 +104,12 @@ The dataset was built on top of prior research ([Chakravarthi, 2024](https://doi
 
 Data was collected from YouTube comments on LGBTQ+-related videos using the [YouTube Comment Scraper](https://github.com/ahmedshahriar/youtube-comment-scraper) tool.
 
-> **Figure 1 - Dataset creation pipeline (showing the collection, preprocessing, and annotation steps)**
-<p align="center">
-  <img
-    src="https://github.com/user-attachments/assets/94f98671-2a2a-411f-9473-29cb73b94698"
-    alt="Figure 1 — Dataset Creation Pipeline"
-    width="533"
-  />
-  <br/>
-</p>
-
 **Pipeline steps:**
 1. Source comments from 3-class, 5-class, and 7-class labelled datasets
 2. Filter only **Homophobia (H)** and **Transphobia (T)**  from 3-class - labelled comments
 3. Export filtered comments to text line files
 4. Annotate spans via Doccano → export as JSON
 5. Convert to CSV → **HT_Span_GOLD dataset**
-
----
-
-### Label Distribution in Source Data
-
-> **Figure 2 - Label Distribution Across Three Languages**
-<p align="center">
-  <img
-    src="https://github.com/user-attachments/assets/8a4ea9a6-c538-49ef-98aa-57e68a38709b"
-    alt="Figure 2 — Label Distribution"
-    width="350"
-  />
-  <br/>
-</p>
 
 ---
 
@@ -161,16 +128,6 @@ Data was collected from YouTube comments on LGBTQ+-related videos using the [You
 ### Model Architecture
 
 We implemented three BERT-based architectures for multilingual span detection:
-
-> **Figure 7 - HTSpan-BERT Architecture**
-<p align="center">
-  <img
-    src="https://github.com/user-attachments/assets/03581307-b9a0-4274-a069-9535508e5bd1"
-    alt="Figure 7 - HTSpan-BERT Architecture"
-    width="400"
-  />
-  <br/>
-</p>
 
 > *The architecture combines a fine-tuned BERT backbone (pre-trained on hate speech + NER data) with either: a span detection head (Model 1), a CRF layer (Model 2), or a BiLSTM + CRF combination (Model 3).*
 
